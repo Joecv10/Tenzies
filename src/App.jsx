@@ -2,6 +2,7 @@ import "./App.css";
 import { generateRandomNumber } from "./utils/functions";
 import Die from "./components/Die/Die";
 import { useState } from "react";
+import ConfettiComponent from "./components/Confetti/Confetti";
 
 function App() {
   const allNewDice = () =>
@@ -11,18 +12,33 @@ function App() {
       isHeld: false,
     }));
 
-  const [arrayNumbers, setArrayNumbers] = useState(allNewDice());
+  const [arrayNumbers, setArrayNumbers] = useState(() => allNewDice());
+  const [gameWon, setGameWon] = useState(false);
 
-  const rollDice = () => {
-    const diceHeld = arrayNumbers.filter((die) => die.isHeld);
-    const arrayUpdated = arrayNumbers.map((die) => {
-      const findDie = diceHeld.find((dieHeld) => dieHeld.id === die.id);
-      if (findDie) {
-        return { ...die };
-      }
-      return { ...die, number: generateRandomNumber(1, 7) };
-    });
-    setArrayNumbers(arrayUpdated);
+  const allHeldValues = arrayNumbers.every((die) => die.isHeld);
+  const setNumbers = new Set(arrayNumbers.map((die) => die.number));
+
+  if (allHeldValues && setNumbers.size === 1 && !gameWon) {
+    setGameWon(true);
+  } else {
+    console.log("Keep playing!");
+  }
+
+  const rollDice = (gameWon) => {
+    if (!gameWon) {
+      const diceHeld = arrayNumbers.filter((die) => die.isHeld);
+      const arrayUpdated = arrayNumbers.map((die) => {
+        const findDie = diceHeld.find((dieHeld) => dieHeld.id === die.id);
+        if (findDie) {
+          return { ...die };
+        }
+        return { ...die, number: generateRandomNumber(1, 7) };
+      });
+      setArrayNumbers(arrayUpdated);
+    } else {
+      setGameWon(false);
+      setArrayNumbers(allNewDice());
+    }
   };
 
   const holdDice = (id) => {
@@ -40,6 +56,7 @@ function App() {
 
   return (
     <>
+      {gameWon && <ConfettiComponent />}
       <main className="container">
         <h1 className="title">Tenzies</h1>
         <p className="instructions">
@@ -51,8 +68,8 @@ function App() {
             <Die key={die.id} die={die} holdDice={holdDice} />
           ))}
         </div>
-        <button className="roll-dice-button" onClick={rollDice}>
-          Roll Dice
+        <button className="roll-dice-button" onClick={() => rollDice(gameWon)}>
+          {gameWon ? "New Game" : "Roll Dice"}
         </button>
       </main>
     </>
