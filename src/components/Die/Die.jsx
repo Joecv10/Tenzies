@@ -1,10 +1,17 @@
 import "./die.styles.scss";
 
 const Die = (props) => {
-  const { value } = props;
+  const { id, number, isHeld } = props.die;
+  const { holdDice } = props;
+
   return (
     <>
-      <button className="die">{value}</button>
+      <button
+        onClick={() => holdDice(id)}
+        className={!isHeld ? "die" : "die-active"}
+      >
+        {number}
+      </button>
     </>
   );
 };
