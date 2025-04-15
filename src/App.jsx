@@ -67,10 +67,14 @@ function App() {
           {arrayNumbers.map((die) => (
             <Die key={die.id} die={die} holdDice={holdDice} />
           ))}
+
+          <button
+            className="roll-dice-button"
+            onClick={() => rollDice(gameWon)}
+          >
+            {gameWon ? "New Game" : "Roll Dice"}
+          </button>
         </div>
-        <button className="roll-dice-button" onClick={() => rollDice(gameWon)}>
-          {gameWon ? "New Game" : "Roll Dice"}
-        </button>
       </main>
     </>
   );
